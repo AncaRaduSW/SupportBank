@@ -18,6 +18,13 @@ class Account:
         self.transactions.append((date, narrative, amount, paid))
         self.transactions.sort()
 
+    def print_transactions(self):
+        for transaction in self.transactions:
+            if transaction[3]:
+                print(self.name + " sent amount " + str(transaction[2]) + " on " + transaction[0] + "\nnarrative : " + transaction[1] + "\n")
+            else:
+                print(self.name + " received amount " + str(transaction[2]) + " on " + transaction[0] + "\nnarrative : " + transaction[1] + "\n")
+
     def __str__(self):
         if self.balance >= 0:
             return "Name: " + self.name + "\nhas money : " + str(self.balance) + "\n"
@@ -70,5 +77,21 @@ with open('Transactions2014.csv', newline='') as csvfile:
 
     csvfile.close()
 
-for acc in accounts:
-    print(acc)
+new_input = input("Enter command: ")
+
+while new_input != "exit":
+    if new_input == "List All":
+        for acc in accounts:
+            print(acc)
+
+    elif new_input.split()[0] == "List":
+        acc = find_account(new_input.split()[1] + " " + new_input.split()[2])
+        if acc != False:
+            acc.print_transactions()
+        else:
+            print("Account not found")
+
+    else:
+        print("Command not found")
+
+    new_input = input("Enter command: ")
