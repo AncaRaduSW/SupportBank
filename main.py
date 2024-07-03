@@ -54,11 +54,12 @@ def find_account(acc_name):
 logger.info("Reading from Transactions2014 CSV file")
 
 with open('Transactions2014.csv', newline='') as csvfile:
-    csvinfo = csv.reader(csvfile, delimiter=',', quotechar='|')
+    csvreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+    csvlist = list(csvreader)
 
     first = True
 
-    for row in csvinfo:
+    for row in csvreader:
         # Skip the first line in the CSV
         if first is True:
             first = False
@@ -66,11 +67,11 @@ with open('Transactions2014.csv', newline='') as csvfile:
 
         # Substract money from sender
 
-        # Check if the
+        # Check if the amount is a float
         try:
             float(row[4])
         except ValueError:
-            logger.warning("Amount on line " + str(row.index()) + " is not a number!!")
+            logger.warning("Amount on line " + str(csvlist.index(row)) + " is not a number!!")
             continue
 
         acc_from = find_account(row[1])
