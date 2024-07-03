@@ -1,4 +1,5 @@
 import csv
+import logging
 
 
 class Account:
@@ -31,6 +32,14 @@ class Account:
         else:
             return "Name: " + self.name + "\nhas debt of : " + str(abs(self.balance)) + "\n"
 
+# Program start
+
+# Add logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename='SupportBank.log', filemode='w', level=logging.DEBUG)
+
+logger.info("Starting to run SupportBank")
+
 accounts = []
 
 
@@ -41,20 +50,31 @@ def find_account(acc_name):
     return False
 
 
+# Read from Transactions2014.csv
+logger.info("Reading from Transactions2014 CSV file")
+
 with open('Transactions2014.csv', newline='') as csvfile:
     csvinfo = csv.reader(csvfile, delimiter=',', quotechar='|')
 
     first = True
 
     for row in csvinfo:
-        # print(row)
+        # Skip the first line in the CSV
         if first is True:
             first = False
             continue
 
         # Substract money from sender
+
+        # Check if the
+        try:
+            float(row[4])
+        except ValueError:
+            logger.warning("Amount on line " + str(row.index()) + " is not a number!!")
+            continue
+
         acc_from = find_account(row[1])
-        if acc_from != False:
+        if acc_from != False:   # found account
             acc_from.substract_money(float(row[4]))
         else:
             acc_from = Account(row[1])
@@ -73,7 +93,6 @@ with open('Transactions2014.csv', newline='') as csvfile:
         # Add transaction to each account
         acc_from.add_transaction(row[0], row[3], row[4], True)
         acc_to.add_transaction(row[0], row[3], row[4], False)
-
 
     csvfile.close()
 
