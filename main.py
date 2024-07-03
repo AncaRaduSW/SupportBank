@@ -50,15 +50,37 @@ def find_account(acc_name):
     return False
 
 
-# Read from Transactions2014.csv
-logger.info("Reading from Transactions2014 CSV file")
+def correct_date(date):
+    date_values = date.split('/')
 
-with open('Transactions2014.csv', newline='') as csvfile:
-    csvinfo = csv.reader(csvfile, delimiter=',', quotechar='|')
+    # Check if the values are int type
+    try:
+        day = int(date_values[0])
+        month = int(date_values[1])
+        year = int(date_values[2])
+    except ValueError:
+        return False
+
+    # Check if the values are physically possible
+    if day < 1 or day > 31 or month < 1 or month > 12:
+        return False
+
+    return True
+
+
+
+csvFileName = input("Enter the name of the csv file: ")
+
+# Read from csv file
+logger.info("Reading from " + csvFileName + " file")
+
+with open(csvFileName, newline='') as csvfile:
+    csvreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+    csvlist = list(csvreader)
 
     first = True
 
-    for row in csvinfo:
+    for row in csvlist:
         # Skip the first line in the CSV
         if first is True:
             first = False
@@ -66,17 +88,22 @@ with open('Transactions2014.csv', newline='') as csvfile:
 
         # Substract money from sender
 
-        # Check if the
+        # Check if the amount is a float
         try:
             float(row[4])
         except ValueError:
-            logger.warning("Amount on line " + str(row.index()) + " is not a number!!")
+            logger.warning("Amount on line " + str(csvlist.index(row) + 1) + " is not a number!!")
+            continue
+
+        # Check if the date is correct
+        if correct_date(row[0]) is False:
+            logger.warning("Date on line " + str(csvlist.index(row) + 1) + " is not valid!!")
             continue
 
         acc_from = find_account(row[1])
         if acc_from != False:   # found account
             acc_from.substract_money(float(row[4]))
-        else:
+        else:                   # create new account
             acc_from = Account(row[1])
             accounts.append(acc_from)
             acc_from.substract_money(float(row[4]))
@@ -96,6 +123,9 @@ with open('Transactions2014.csv', newline='') as csvfile:
 
     csvfile.close()
 
+logger.info("Finished reading from CSV file")
+
+logger.info("Starting to enter commands")
 new_input = input("Enter command: ")
 
 while new_input != "exit":
@@ -114,3 +144,5 @@ while new_input != "exit":
         print("Command not found")
 
     new_input = input("Enter command: ")
+
+logger.info("Finished entering commands")

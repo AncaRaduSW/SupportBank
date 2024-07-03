@@ -1,2 +1,5 @@
 INFO:__main__:Starting to run SupportBank
-INFO:__main__:Reading from Transactions2014 CSV file
+INFO:__main__:Reading from DodgyTransactions2015.csvCSV file
+WARNING:__main__:Amount on line 28 is not a number!!
+WARNING:__main__:Date on line 52 is not a valid!!
+INFO:__main__:Finished reading from CSV file
